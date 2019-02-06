@@ -1,0 +1,58 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.1.0'
+        classpath 'com.google.code.gson:gson:2.8.5'
+        classpath 'com.google.guava:guava:27.0.1-jre'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+}
+
+android {
+    compileSdkVersion 'android-26'
+}
+
+dependencies {
+    implementation 'com.google.gms:google-services:4.1.0'
+}
+
+println "Extracting serverClientId from google-services.json"
+def googleServices = new groovy.json.JsonSlurper().parseText(file('google-services.json').text)
+def clients = googleServices.client
+assert clients.class == ArrayList
+assert clients.size == 1
+def oauth_clients = clients.get(0).oauth_client
+assert oauth_clients.size > 0
+assert oauth_clients.class == ArrayList
+def search_client_id = null
+for (def i = 0; i < oauth_clients.size; i++) {
+    def curClient = oauth_clients.get(i);
+    if (curClient.client_type == 3) {
+        if ( search_client_id != null ) { throw new GradleException("There are more than one client id with id = '3'!") }
+        search_client_id = curClient.client_id
+    }
+}
+if ( search_client_id == null ) { throw new GradleException("No web client id found in google-services.json") }
+
+ant.propertyfile(file: "./assets/firebase.properties") {
+    entry( key: "ru.reldev.firebase.google_serverClientId", value: search_client_id)
+}
+
+apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
