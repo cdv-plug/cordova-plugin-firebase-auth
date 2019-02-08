@@ -1,0 +1,3 @@
+*.i['ws', 'ml', 'pr']?
+node_modules
+*.md

@@ -11,3 +11,9 @@ exports.login = function (provider) {
     }
   });
 };
+
+exports.logout = function () {
+  return new Promise(function(res, err) {
+    exec(res, err, __PLUGIN__, "logout", []);
+  });
+};

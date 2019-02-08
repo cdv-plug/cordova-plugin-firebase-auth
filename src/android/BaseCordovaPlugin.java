@@ -68,7 +68,7 @@ public abstract class BaseCordovaPlugin extends CordovaPlugin {
             @Override
             public void run() {
                 try {
-                    method.invoke(ReflectiveCordovaPlugin.this, methodArgs);
+                    method.invoke(BaseCordovaPlugin.this, methodArgs);
                 } catch (Throwable e) {
                     if (e instanceof InvocationTargetException) {
                         e = ((InvocationTargetException)e).getTargetException();

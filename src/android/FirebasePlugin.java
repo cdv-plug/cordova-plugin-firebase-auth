@@ -10,6 +10,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -115,6 +117,31 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
                 configureGoogleSignin();
             }
         });
+    }
+
+    @SuppressWarnings("unused")
+    @CordovaMethod
+    public void logout(final CallbackContext context) {
+        this.cordova.getThreadPool().execute(new Runnable() {
+                                                 public void run() {
+
+                                                     log("Logout");
+                                                     mAuth.signOut();
+                                                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                                                         @Override
+                                                         public void onResult(@NonNull Status status) {
+                                                             PluginResult result;
+                                                             if (status.equals(Status.RESULT_SUCCESS)) {
+                                                                 result = new PluginResult(PluginResult.Status.OK, "ok");
+                                                             } else {
+                                                                 result = new PluginResult(PluginResult.Status.ERROR, "error");
+                                                             }
+                                                             context.sendPluginResult(result);
+                                                         }
+                                                     });
+                                                 }
+                                             }
+        );
     }
 
     @SuppressWarnings("unused")
