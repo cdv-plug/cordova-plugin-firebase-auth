@@ -61,9 +61,6 @@
         FIRAuthCredential *credential =
         [FIRGoogleAuthProvider credentialWithIDToken:authentication.idToken
                                          accessToken:authentication.accessToken];
-        NSString * serverAuthCode = user.serverAuthCode ? user.serverAuthCode : @"";
-        NSString * idToken = user.authentication.idToken;
-
         [[FIRAuth auth] signInAndRetrieveDataWithCredential:credential
              completion:^(FIRAuthDataResult * _Nullable authResult,
                           NSError * _Nullable error) {
@@ -76,18 +73,13 @@
                  }
                  FIRUser *user = authResult.user;
 
-                 [self callbackDictionary:@{
-                                            @"uid": user.uid,
-                                            @"displayName": user.displayName ? user.displayName : @"",
-                                            @"email": user.email ? user.email : @"",
-                                            @"phoneNumber": user.phoneNumber ? user.phoneNumber : @"",
-                                            @"photoURL": user.photoURL ? user.photoURL.absoluteString : @"",
-                                            @"providerId": user.providerID ? user.providerID : @"",
+                 [user getIDTokenForcingRefresh:true completion:^(NSString * _Nullable token, NSError * _Nullable error) {
+                     [self callbackDictionary:@{
+                                                    @"idToken": token,
+                                                }
+                               withCallbackId:self.currentSigninCallbackId];
+                 }];
 
-                                            @"serverAuthCode": serverAuthCode,
-                                            @"idToken": idToken,
-                                            }
-                       withCallbackId:self.currentSigninCallbackId];
              }];
 
 

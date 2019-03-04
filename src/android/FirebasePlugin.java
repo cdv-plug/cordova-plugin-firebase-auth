@@ -19,8 +19,10 @@ import com.google.android.gms.auth.api.Auth;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import org.apache.cordova.CallbackContext;
@@ -35,7 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListener, FirebaseAuth.AuthStateListener {
+public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListener {
 
     private static final int RC_SIGN_IN = 100;
     private static final String propertyPrefix = "ru.reldev.firebase";
@@ -43,12 +45,7 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
     private FirebaseAuth mAuth;
     private boolean isInitialized = false;
     private GoogleApiClient mGoogleApiClient;
-    private HashMap<String, CallbackContext> subscribers = new HashMap<String, CallbackContext>();
     private CallbackContext signinCallback;
-
-    private String idToken = "";
-    private String serverAuthCode = "";
-
 
     private static String getProperty(String key,Context context) throws IOException {
         Properties properties = new Properties();;
@@ -56,7 +53,6 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
         InputStream inputStream = assetManager.open("firebase.properties");
         properties.load(inputStream);
         return properties.getProperty(propertyPrefix + "." + key);
-
     }
 
     @Override
@@ -87,15 +83,14 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
         GoogleSignInOptions.Builder b = new GoogleSignInOptions.Builder();
 
         GoogleSignInOptions mGso = b
-                .requestIdToken(serverClientId)
-                .requestServerAuthCode(serverClientId)
-                .requestId()
-                .requestProfile()
-                .requestEmail()
-                .build();
+            .requestIdToken(serverClientId)
+            .requestServerAuthCode(serverClientId)
+            .requestId()
+            .requestProfile()
+            .requestEmail()
+            .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(context)
-                //.enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, mGso)
                 .build();
 
@@ -123,24 +118,24 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
     @CordovaMethod
     public void logout(final CallbackContext context) {
         this.cordova.getThreadPool().execute(new Runnable() {
-                                                 public void run() {
+             public void run() {
 
-                                                     log("Logout");
-                                                     mAuth.signOut();
-                                                     Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
-                                                         @Override
-                                                         public void onResult(@NonNull Status status) {
-                                                             PluginResult result;
-                                                             if (status.equals(Status.RESULT_SUCCESS)) {
-                                                                 result = new PluginResult(PluginResult.Status.OK, "ok");
-                                                             } else {
-                                                                 result = new PluginResult(PluginResult.Status.ERROR, "error");
-                                                             }
-                                                             context.sendPluginResult(result);
-                                                         }
-                                                     });
-                                                 }
-                                             }
+                 log("Logout");
+                 mAuth.signOut();
+                 Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                     @Override
+                     public void onResult(@NonNull Status status) {
+                         PluginResult result;
+                         if (status.equals(Status.RESULT_SUCCESS)) {
+                             result = new PluginResult(PluginResult.Status.OK, "ok");
+                         } else {
+                             result = new PluginResult(PluginResult.Status.ERROR, "error");
+                         }
+                         context.sendPluginResult(result);
+                     }
+                 });
+             }
+         }
         );
     }
 
@@ -150,52 +145,7 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         this.cordova.startActivityForResult(this, signInIntent, RC_SIGN_IN);
 
-        idToken = "";
-        serverAuthCode = "";
-
         signinCallback = context;
-    }
-
-
-    @SuppressWarnings("unused")
-    @CordovaMethod
-    public void subscribe(final String subscriberId, final CallbackContext context) {
-        subscribers.put(subscriberId, context);
-
-        if(subscribers.size() == 1) {
-            mAuth.addAuthStateListener(this);
-        }
-        log("subscribed by id'" + subscriberId + "'");
-    }
-
-    @SuppressWarnings("unused")
-    @CordovaMethod
-    public void unsubscribe(final String subscriberId, final CallbackContext context) {
-        CallbackContext deletedSubscriber = subscribers.remove(subscriberId);
-
-        if (subscribers.size() == 0) {
-            mAuth.removeAuthStateListener(this);
-        }
-
-        if (deletedSubscriber != null) {
-            log("Unable to unsubscribe by id '" + subscriberId + "'; because it doesn't exist!");
-        } else {
-            log("unsubscribed by id'" + subscriberId + "'");
-        }
-
-    }
-
-    private void notifySubscribers(final PluginResult pluginResult) {
-        log("trying to notify subscribers w/ " + pluginResult.getStrMessage());
-
-        Iterator<Map.Entry<String, CallbackContext>> it = subscribers.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, CallbackContext> pair = it.next();
-            CallbackContext subscriber = pair.getValue();
-
-            subscriber.sendPluginResult(pluginResult);
-            it.remove();
-        }
     }
 
     @Override
@@ -215,11 +165,9 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
                 }
 
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                idToken = account.getIdToken();
-                serverAuthCode = account.getServerAuthCode();
                 mAuth
-                        .signInWithCredential(credential)
-                        .addOnCompleteListener(cordova.getActivity(), this);
+                    .signInWithCredential(credential)
+                    .addOnCompleteListener(cordova.getActivity(), this);
             } else {
                 this.signinCallback.error(result.getStatus().getStatusMessage());
                 this.signinCallback = null;
@@ -230,13 +178,32 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
     @Override
     public void onComplete(@NonNull Task task) {
         if (this.signinCallback != null) {
+            final CallbackContext signinCallback = this.signinCallback;
             if (task.isSuccessful()) {
-                FirebaseUser user = mAuth.getCurrentUser();
+                final FirebaseUser user = mAuth.getCurrentUser();
+
                 if (user != null) {
-                    this.signinCallback.success(buildUserResponse(user));
+                    user.getIdToken(true)
+                        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<GetTokenResult> task) {
+                                if (task.isSuccessful()) {
+                                    try {
+                                        final String idToken = task.getResult().getToken();
+                                        signinCallback.success(buildUserResponse(user, idToken));
+                                    } catch (NullPointerException e) {
+                                        signinCallback.error("Unable to retrieve idToken");
+                                    }
+                                } else {
+                                    signinCallback.error("Unable to retrieve idToken");
+                                }
+                            }
+                        });
                 } else {
-                    this.signinCallback.error("Sign-in success, but user object is empty");
+                    signinCallback.error("Sign-in success, but user object is empty");
+                    return;
                 }
+
             } else {
                 Exception ex = task.getException();
                 String message = "<no message provided>";
@@ -250,35 +217,11 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
         }
     }
 
-    @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        PluginResult pluginResult;
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        PluginResult.Status status = PluginResult.Status.OK;
-
-        if (user != null) {
-            pluginResult = new PluginResult(status, buildUserResponse(user));
-        } else {
-            pluginResult = new PluginResult(status, "");
-        }
-        pluginResult.setKeepCallback(true); // avoid callback removal
-
-        this.notifySubscribers(pluginResult);
-    }
-
-    private JSONObject buildUserResponse(final FirebaseUser user) {
+    private JSONObject buildUserResponse(final FirebaseUser user, final String idToken) {
         JSONObject result = new JSONObject();
 
         try {
-            result.put("uid", user.getUid());
-            result.put("displayName", user.getDisplayName());
-            result.put("email", user.getEmail());
-            result.put("phoneNumber", user.getPhoneNumber());
-            result.put("photoURL", user.getPhotoUrl());
-            result.put("providerId", user.getProviderId());
-
             result.put("idToken", idToken);
-            result.put("serverAuthCode", serverAuthCode);
         } catch (JSONException e) {
             log("fail building user: " + e.getMessage());
         }

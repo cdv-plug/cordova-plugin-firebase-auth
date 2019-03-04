@@ -5,7 +5,7 @@ var SEARCHED_POSTFIX = '.xcodeproj';
 var plist = require('plist');
 
 module.exports = function(context) {
-  var isIosAdded = context.opts.platforms.includes('ios');
+  var isIosAdded = context.opts.platforms.filter(function(a) { return a.indexOf("ios") === 0; }).length > 0;
 
   if (!isIosAdded) {
     return;
