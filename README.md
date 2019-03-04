@@ -11,6 +11,16 @@ or in `config.xml`
 ```
 <plugin name="cordova-plugin-firebase-auth" spec="https://github.com/stck/cordova-plugin-firebase-auth" />
 ```
+and it's required to post file references in `config.xml > platforms section`
+```
+<platform name="android">
+    <resource-file src="google-services.json" target="google-services.json" />
+</platform>
+<platform name="ios">
+    <resource-file src="GoogleService-Info.plist" />
+</platform>
+```
+
 
 ### Requirements
 
@@ -37,14 +47,14 @@ if (window.plugins.FirebasePlugin) {
 
 Examples:
 ```js
-    // pure Promise
-    window.FirebasePlugin.login('google')
-      .then(function(data) {
-        console.log(data);
-      })
-      .catch(function(err) {
-        console.error(err)
-      })
-    // or async-await
-    await window.FirebasePlugin.logout();
+// pure Promise
+window.FirebasePlugin.login('google')
+  .then(function(data) {
+    console.log(data);
+  })
+  .catch(function(err) {
+    console.error(err)
+  })
+// or async-await
+await window.FirebasePlugin.logout();
 ```
