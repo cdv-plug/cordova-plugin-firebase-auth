@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListener {
+public class FirebaseAuthPlugin extends BaseCordovaPlugin implements OnCompleteListener {
 
     private static final int RC_SIGN_IN = 100;
     private static final String propertyPrefix = "ru.reldev.firebase";
@@ -66,7 +66,7 @@ public class FirebasePlugin extends BaseCordovaPlugin implements OnCompleteListe
     }
 
     private void log(String message) {
-        String TAG = "FirebasePlugin";
+        String TAG = "FirebaseAuthPlugin";
         Log.d(TAG, message);
     }
 

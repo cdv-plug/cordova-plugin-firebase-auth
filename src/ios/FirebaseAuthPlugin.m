@@ -1,8 +1,8 @@
-#import "FirebasePlugin.h"
+#import "FirebaseAuthPlugin.h"
 @import Firebase;
 @import GoogleSignIn;
 
-@implementation FirebasePlugin
+@implementation FirebaseAuthPlugin
 - (void)pluginInitialize {
     @autoreleasepool {
         [FIRApp configure];

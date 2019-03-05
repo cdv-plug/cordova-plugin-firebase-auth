@@ -16,8 +16,12 @@
 
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="FirebasePlugin">
-                <param name="android-package" value="ru.reldev.firebase.FirebasePlugin" />
+            <feature name="FirebaseAuthPlugin">
+                <param name="android-package" value="ru.reldev.firebase.FirebaseAuthPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="FirebaseAnalyticsPlugin">
+                <param name="android-package" value="ru.reldev.firebase.FirebaseAnalyticsPlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -28,7 +32,8 @@
             <uses-permission android:name="android.permission.WAKE_LOCK" />
         </config-file>
 
-        <source-file src="src/android/FirebasePlugin.java" target-dir="src/ru/reldev/firebase" />
+        <source-file src="src/android/FirebaseAuthPlugin.java" target-dir="src/ru/reldev/firebase" />
+        <source-file src="src/android/FirebaseAnalyticsPlugin.java" target-dir="src/ru/reldev/firebase" />
         <source-file src="src/android/BaseCordovaPlugin.java" target-dir="src/ru/reldev/firebase" />
 
         <framework src="com.google.firebase:firebase-core:+" />
@@ -49,8 +54,10 @@
             </feature>
         </config-file>
 
-        <header-file src="src/ios/FirebasePlugin.h" />
-        <source-file src="src/ios/FirebasePlugin.m" />
+        <header-file src="src/ios/FirebaseAuthPlugin.h" />
+        <header-file src="src/ios/FirebaseAnalyticsPlugin.h" />
+        <source-file src="src/ios/FirebaseAuthPlugin.m" />
+        <source-file src="src/ios/FirebaseAnalyticsPlugin.m" />
 
         <framework src="Firebase/Auth" type="podspec" spec="~> 5.0"/>
         <framework src="GoogleSignIn" type="podspec" spec="~> 4.4.0" />
