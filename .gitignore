@@ -1,1 +1,2 @@
 *.i['ml', 'pr', 'ws']?
+node_modules
