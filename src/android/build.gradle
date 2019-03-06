@@ -35,10 +35,18 @@ dependencies {
 
 println "Extracting serverClientId from google-services.json"
 def googleServices = new groovy.json.JsonSlurper().parseText(file('google-services.json').text)
+def manifest = new XmlSlurper().parse(file("AndroidManifest.xml"))
+def packageName = manifest.@package.text()
 def clients = googleServices.client
 assert clients.class == ArrayList
-assert clients.size == 1
-def oauth_clients = clients.get(0).oauth_client
+def clientIndex = -1;
+for (def i = 0; i< clients.size; i++) {
+    if (clients.get(i).client_info.android_client_info.package_name == packageName) {
+        clientIndex = i;
+    }
+}
+assert clientIndex != -1
+def oauth_clients = clients.get(clientIndex).oauth_client
 assert oauth_clients.size > 0
 assert oauth_clients.class == ArrayList
 def search_client_id = null
