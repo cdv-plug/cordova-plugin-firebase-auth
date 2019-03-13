@@ -59,6 +59,7 @@
         <source-file src="src/ios/FirebaseAuthPlugin.m" />
         <source-file src="src/ios/FirebaseAnalyticsPlugin.m" />
 
+        <framework src="Firebase/Core" type="podspec" spec="~> 5.0"/>
         <framework src="Firebase/Auth" type="podspec" spec="~> 5.0"/>
         <framework src="GoogleSignIn" type="podspec" spec="~> 4.4.0" />
         <framework src="GoogleToolboxForMac" type="podspec" spec="~> 2.2.0" />

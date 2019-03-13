@@ -1,6 +1,6 @@
 #import <Cordova/CDV.h>
 
-@interface FirebaseAuthPlugin : CDVPlugin
+@interface FirebaseAnalyticsPlugin : CDVPlugin
 
 - (void)logEvent:(CDVInvokedUrlCommand*)command;
 - (void)setUserId:(CDVInvokedUrlCommand*)command;
