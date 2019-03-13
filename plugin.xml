@@ -48,8 +48,12 @@
         <hook type="after_platform_add" src="hooks/run_pods.sh" />
         <hook type="after_platform_add" src="hooks/linkClientIdCapabilities.js" />
         <config-file target="config.xml" parent="/*">
-            <feature name="FirebasePlugin">
-                <param name="ios-package" value="FirebasePlugin" />
+            <feature name="FirebaseAuthPlugin">
+                <param name="ios-package" value="FirebaseAuthPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="FirebaseAnalyticsPlugin">
+                <param name="ios-package" value="FirebaseAnalyticsPlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
