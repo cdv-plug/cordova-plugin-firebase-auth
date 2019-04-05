@@ -37,3 +37,9 @@ exports.setScreen = function(name) {
     exec(res, err, __ANALYTICS__, "setCurrentScreen", [ name ]);
   });
 };
+
+exports.setUserProperty = function(name, value) {
+  return new Promise(function(res, err) {
+    exec(res, err, __ANALYTICS__, "setUserProperty", [name, value])
+  });
+};
