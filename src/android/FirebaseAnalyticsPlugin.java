@@ -51,6 +51,13 @@ public class FirebaseAnalyticsPlugin extends BaseCordovaPlugin {
     }
 
     @CordovaMethod
+    private void setUserProperty(String name, String value, CallbackContext callbackContext) {
+        this.firebaseAnalytics.setUserProperty(name, value);
+
+        callbackContext.success();
+    }
+
+    @CordovaMethod
     private void logEvent(String name, JSONObject params, CallbackContext callbackContext) throws JSONException {
         Bundle bundle = new Bundle();
         Iterator<String> it = params.keys();
