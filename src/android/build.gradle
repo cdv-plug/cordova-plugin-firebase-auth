@@ -52,7 +52,7 @@ assert oauth_clients.class == ArrayList
 def search_client_id = null
 for (def i = 0; i < oauth_clients.size; i++) {
     def curClient = oauth_clients.get(i);
-    if (curClient.client_type == 3) {
+    if (curClient.client_type == 3 || curClient.client_type == 1) {
         if ( search_client_id != null ) { throw new GradleException("There are more than one client id with id = '3'!") }
         search_client_id = curClient.client_id
     }
