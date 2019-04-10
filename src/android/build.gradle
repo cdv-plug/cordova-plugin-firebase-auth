@@ -39,10 +39,10 @@ def manifest = new XmlSlurper().parse(file("AndroidManifest.xml"))
 def packageName = manifest.@package.text()
 def clients = googleServices.client
 assert clients.class == ArrayList
-def clientIndex = -1;
+def clientIndex = -1
 for (def i = 0; i< clients.size; i++) {
     if (clients.get(i).client_info.android_client_info.package_name == packageName) {
-        clientIndex = i;
+        clientIndex = i
     }
 }
 assert clientIndex != -1
@@ -51,7 +51,7 @@ assert oauth_clients.size > 0
 assert oauth_clients.class == ArrayList
 def search_client_id = null
 for (def i = 0; i < oauth_clients.size; i++) {
-    def curClient = oauth_clients.get(i);
+    def curClient = oauth_clients.get(i)
     if (curClient.client_type == 3 || curClient.client_type == 1) {
         if ( search_client_id != null ) { throw new GradleException("There are more than one client id with id = '3'!") }
         search_client_id = curClient.client_id
