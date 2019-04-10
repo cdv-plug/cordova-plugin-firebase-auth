@@ -169,7 +169,7 @@ public class FirebaseAuthPlugin extends BaseCordovaPlugin implements OnCompleteL
                     .signInWithCredential(credential)
                     .addOnCompleteListener(cordova.getActivity(), this);
             } else {
-                this.signinCallback.error(result.getStatus().getStatusMessage());
+                this.signinCallback.error(result.getStatus().toString());
                 this.signinCallback = null;
             }
         }
