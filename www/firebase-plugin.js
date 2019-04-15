@@ -43,3 +43,9 @@ exports.setUserProperty = function(name, value) {
     exec(res, err, __ANALYTICS__, "setUserProperty", [name, value])
   });
 };
+
+exports.getRemoteValue = function(key) {
+  return new Promise(function(res, err) {
+    exec(res, err, __ANALYTICS__, "getValue", [key])
+  });
+};
