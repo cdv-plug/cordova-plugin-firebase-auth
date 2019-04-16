@@ -53,6 +53,8 @@ if (window.plugins.FirebasePlugin) {
 
 **{Promise} setUserProperty(String name, String value)** set analytics value for parameter
 
+**{Promise} getRemoteValue(String key)** get remote config value by key
+
 Examples:
 ```js
 // pure Promise
