@@ -38,6 +38,7 @@
 
         <framework src="com.google.firebase:firebase-core:+" />
         <framework src="com.google.firebase:firebase-auth:+" />
+        <framework src="com.google.firebase:firebase-config:+" />
         <framework src="com.google.android.gms:play-services-auth:16.0.1" />
         <framework src="com.google.gms:google-services:4.1.0" />
 
@@ -65,6 +66,7 @@
 
         <framework src="Firebase/Core" type="podspec" spec="~> 5.0"/>
         <framework src="Firebase/Auth" type="podspec" spec="~> 5.0"/>
+        <framework src="Firebase/RemoteConfig" type="podspec" spec="~> 5.0"/>
         <framework src="GoogleSignIn" type="podspec" spec="~> 4.4.0" />
         <framework src="GoogleToolboxForMac" type="podspec" spec="~> 2.2.0" />
     </platform>

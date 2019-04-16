@@ -30,7 +30,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.gms:google-services:4.1.0'
+    implementation 'com.google.gms:google-services:4.2.0'
+
+    implementation 'com.google.firebase:firebase-config:16.5.0'
 }
 
 println "Extracting serverClientId from google-services.json"

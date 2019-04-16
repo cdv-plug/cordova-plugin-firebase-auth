@@ -2,9 +2,14 @@ package ru.reldev.firebase;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.apache.cordova.CallbackContext;
 import org.json.JSONException;
@@ -14,13 +19,16 @@ import java.util.Iterator;
 
 public class FirebaseAnalyticsPlugin extends BaseCordovaPlugin {
     private boolean isInitialized = false;
+
     private FirebaseAnalytics firebaseAnalytics;
+
+    private FirebaseRemoteConfig firebaseRemoteConfig;
 
     @Override
     public void onStart() {
         super.onStart();
 
-        if(!isInitialized) {
+        if (!isInitialized) {
             this.isInitialized = true;
             log("plugin started");
         }
@@ -38,6 +46,15 @@ public class FirebaseAnalyticsPlugin extends BaseCordovaPlugin {
             public void run() {
                 log("initializing plugin");
                 firebaseAnalytics = FirebaseAnalytics.getInstance(context);
+                firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+                firebaseRemoteConfig.fetchAndActivate()
+                        .addOnCompleteListener(new OnCompleteListener<Boolean>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Boolean> task) {
+                                log("firebaseRemoteConfig fetched and activated");
+                            }
+                        });
+
                 log("initialized");
             }
         });
@@ -67,15 +84,15 @@ public class FirebaseAnalyticsPlugin extends BaseCordovaPlugin {
             Object value = params.get(key);
 
             if (value instanceof String) {
-                bundle.putString(key, (String)value);
+                bundle.putString(key, (String) value);
             } else if (value instanceof Integer) {
-                bundle.putInt(key, (Integer)value);
+                bundle.putInt(key, (Integer) value);
             } else if (value instanceof Double) {
-                bundle.putDouble(key, (Double)value);
+                bundle.putDouble(key, (Double) value);
             } else if (value instanceof Long) {
-                bundle.putLong(key, (Long)value);
+                bundle.putLong(key, (Long) value);
             } else {
-                log("invalid type given for key :\""+key+"\"");
+                log("invalid type given for key :\"" + key + "\"");
             }
         }
 
@@ -93,5 +110,11 @@ public class FirebaseAnalyticsPlugin extends BaseCordovaPlugin {
         );
 
         callbackContext.success();
+    }
+
+    @CordovaMethod
+    protected void getValue(String key, final CallbackContext callbackContext) {
+        String value = firebaseRemoteConfig.getValue(key).asString();
+        callbackContext.success(value);
     }
 }
